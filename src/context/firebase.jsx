@@ -8,8 +8,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { getFirestore , collection , addDoc} from "firebase/firestore";
-import { getStorage , ref , uploadBytes} from "firebase/storage";
+import { getFirestore , collection , addDoc , getDocs} from "firebase/firestore";
+import { getStorage , ref , uploadBytes , getDownloadURL} from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDN1HhAwR3OpCgrXekOnbl3LMuzHrAqfqg",
@@ -80,14 +80,26 @@ export const FirebaseProvider = (props) => {
   const handleListData = async (name, isBnNumber, price, coverPic) => {
     const imageRef = ref(storage, `uploads/images/${Date.now()}-${coverPic.name}`);
     const uploadRes = await uploadBytes(imageRef,coverPic);
+    console.log(name);
+    console.log(isBnNumber);
+    console.log(price);
+    console.log(uploadRes.ref.fullPath);
+    console.log(user.uid);
+    console.log(user.email);
     return await addDoc(collection(firestore,'books'),{
       name,
       isBnNumber, price, imageURL: uploadRes.ref.fullPath,
       userID:user.uid,
       userEmail:user.email,
-      displayName:user.name,
-      photoURL:user.photoURL
     })
+  };
+
+  const getURL = (path) => {
+    return getDownloadURL(ref(storage,path));
+  }
+
+  const getAllList = () => {
+    return getDocs(collection(firestore,'books'));
   };
 
   const isLoggedIn = user ? true : false;
@@ -98,6 +110,8 @@ export const FirebaseProvider = (props) => {
         createUser,
         googleSignIn,
         handleListData,
+        getAllList,
+        getURL,
         isLoggedIn,
       }}
     >
