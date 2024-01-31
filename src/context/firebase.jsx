@@ -29,18 +29,37 @@ const googleProvider = new GoogleAuthProvider();
 const firestore = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
 
+
+
 export const FirebaseProvider = (props) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    onAuthStateChanged(firebaseAuth, (user) => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
       if (user) {
         setUser(user);
       } else {
         setUser(null);
       }
     });
+  
+    return () => unsubscribe();
   }, []);
+
+  
+
+
+  useEffect(() => {
+    // Call fetchOrder only when the user state is not null
+    if (user) {
+      fetchOrder();
+    }
+  }, [user]);
+
+  const getCurrentUser = () => {
+    console.log('user',user);
+    return user;
+  };
 
   const signInUser = (email, password) => {
     createUserWithEmailAndPassword(firebaseAuth, email, password)
@@ -114,22 +133,27 @@ export const FirebaseProvider = (props) => {
   };
 
   const placeOrder = async (bookId,qty) => {
-    const collectionRef = collection(firestore,'books',bookId,"orders");
+    const collectionRef = collection(firestore,"books",bookId,"orders");
+    console.log(user);
+    const x = user.uid;
+    console.log(x);
     const res = await addDoc(collectionRef, {
-        userID:user.uid,
-        userEmail:user.email,
+       userID:x,
+       userEmail:user.email,
         qty
       });
       return res
   }
 
-  const fetchOrder = async () => {
-    if(!user) return null;
-    const collectionRef = collection(firestore,'books');
-    const q = query(collectionRef, where("userID" , "==" , user.uid));
-    const res = await getDocs(q);
-    return res;
-  }
+  const fetchOrder = async (userId) => {
+    const collectionRef = collection(firestore, 'books');
+      const q = query(collectionRef, where('userID', '==', user.uid));
+      const res = await getDocs(q);
+      return res;
+  };
+  
+
+  
 
   const isLoggedIn = user ? true : false;
   return (
@@ -142,6 +166,7 @@ export const FirebaseProvider = (props) => {
         getAllList,
         getURL,
         getBookId,
+        getCurrentUser,
         isLoggedIn,
         placeOrder,
         fetchOrder
