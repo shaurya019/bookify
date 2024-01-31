@@ -12,6 +12,8 @@ import RegisterPage from "./pages/Register";
 import LoginPage from "./pages/Login";
 import ListingPage from "./pages/List";
 import HomePage from "./pages/Home";
+import DetailsPage from "./pages/Details";
+import OrderPage from "./pages/Order";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/book/list" element={<ListingPage />} />
+        <Route path="/book/orders" element={<OrderPage />} />
+        <Route path="/book/view/:bookId" element={<DetailsPage />} />
       </Routes>
     </div>
   );

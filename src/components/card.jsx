@@ -2,9 +2,11 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { useEffect, useState } from "react";
 import { useFirebase } from "../context/firebase";
+import { useNavigate } from 'react-router-dom';
 
 function Cards(props) {
     const firebase = useFirebase();
+    const navigate = useNavigate();
      const [url,setUrl] = useState(null);
 
 
@@ -20,6 +22,7 @@ function Cards(props) {
         <Card.Text>
           Book Cost is {props.price},
         </Card.Text>
+        <button onClick={e => navigate(`/book/view/${props.id}`)} >Click</button>
       </Card.Body>
     </Card>
   );

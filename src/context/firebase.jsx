@@ -8,7 +8,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { getFirestore , collection , addDoc , getDocs} from "firebase/firestore";
+import { getFirestore , collection , addDoc , getDocs , getDoc, doc , query , where} from "firebase/firestore";
 import { getStorage , ref , uploadBytes , getDownloadURL} from "firebase/storage";
 
 const firebaseConfig = {
@@ -65,6 +65,17 @@ export const FirebaseProvider = (props) => {
       });
   };
 
+  const getBookId = async (id) => {
+    try {
+      const docRef = doc(firestore, 'books', id);
+      const res = await getDoc(docRef);
+      return res;
+    } catch (error) {
+      console.error("Error in getBookId:", error);
+      throw error; // Propagate the error if needed
+    }
+  };
+
   const googleSignIn = (email, password) => {
     signInWithPopup(firebaseAuth, googleProvider)
       .then((result) => {
@@ -102,6 +113,24 @@ export const FirebaseProvider = (props) => {
     return getDocs(collection(firestore,'books'));
   };
 
+  const placeOrder = async (bookId,qty) => {
+    const collectionRef = collection(firestore,'books',bookId,"orders");
+    const res = await addDoc(collectionRef, {
+        userID:user.uid,
+        userEmail:user.email,
+        qty
+      });
+      return res
+  }
+
+  const fetchOrder = async () => {
+    if(!user) return null;
+    const collectionRef = collection(firestore,'books');
+    const q = query(collectionRef, where("userID" , "==" , user.uid));
+    const res = await getDocs(q);
+    return res;
+  }
+
   const isLoggedIn = user ? true : false;
   return (
     <FirebaseContext.Provider
@@ -112,7 +141,10 @@ export const FirebaseProvider = (props) => {
         handleListData,
         getAllList,
         getURL,
+        getBookId,
         isLoggedIn,
+        placeOrder,
+        fetchOrder
       }}
     >
       {props.children}
