@@ -14,6 +14,7 @@ import ListingPage from "./pages/List";
 import HomePage from "./pages/Home";
 import DetailsPage from "./pages/Details";
 import OrderPage from "./pages/Order";
+import OrderDetailPage from "./pages/OrderDetail";
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/book/list" element={<ListingPage />} />
         <Route path="/book/orders" element={<OrderPage />} />
         <Route path="/book/view/:bookId" element={<DetailsPage />} />
+        <Route path="/book/order/:bookId" element={<OrderDetailPage />} />
       </Routes>
     </div>
   );

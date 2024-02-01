@@ -22,7 +22,7 @@ function Cards(props) {
         <Card.Text>
           Book Cost is {props.price},
         </Card.Text>
-        <button onClick={e => navigate(`/book/view/${props.id}`)} >Click</button>
+        <button onClick={e => navigate(props.link)} >Click</button>
       </Card.Body>
     </Card>
   );
